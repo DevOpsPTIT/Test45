@@ -28,8 +28,8 @@ RUN ./gradlew bootJar --no-daemon -x test
 FROM eclipse-temurin:21-jre-alpine AS runtime
 
 LABEL org.opencontainers.image.title="Campus Hub Backend"
-LABEL org.opencontainers.image.description="Spring Boot backend for Campus Hub"
-LABEL org.opencontainers.image.version="0.0.1"
+LABEL org.opencontainers.image.description="Spring Boot backend for Campus Hub - PTIT"
+LABEL org.opencontainers.image.version="1.0.0"
 
 # Tạo non-root user để tăng bảo mật
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup

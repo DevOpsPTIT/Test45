@@ -1,30 +1,37 @@
 # Campus Hub Backend
 
+## Thông tin sinh viên
+
+| Họ tên | Mã sinh viên |
+|--------|-------------|
+| *(Điền họ tên)* | *(Điền MSSV)* |
+
+---
+
 ## Cấu trúc dự án
 
 ```
 Test45/
 ├── src/
 │   ├── main/
-│   │   ├── java/com/example/campushub/
+│   │   ├── java/vn/edu/ptit/campushub/
 │   │   │   ├── CampusHubApplication.java
-│   │   │   ├── announcement/
-│   │   │   │   ├── Announcement.java            ← JPA Entity
-│   │   │   │   ├── AnnouncementRepository.java  ← Spring Data JPA
-│   │   │   │   ├── AnnouncementService.java     ← Business logic
-│   │   │   │   ├── AnnouncementController.java  ← REST endpoints
-│   │   │   │   └── AnnouncementNotFoundException.java
-│   │   │   └── common/
-│   │   │       └── GlobalExceptionHandler.java
+│   │   │   ├── auth/          ← Xác thực
+│   │   │   ├── category/      ← Danh mục bài đăng
+│   │   │   ├── comment/       ← Bình luận
+│   │   │   ├── common/        ← Xử lý lỗi chung
+│   │   │   ├── config/        ← Cấu hình Security, Demo data
+│   │   │   ├── post/          ← Bài đăng (entity, service, controller)
+│   │   │   ├── reaction/      ← Phản ứng bài đăng
+│   │   │   └── user/          ← Người dùng
 │   │   └── resources/
-│   │       └── application.properties
+│   │       ├── application.yml
+│   │       └── db/migration/  ← Flyway migration scripts
 │   └── test/
-│       ├── java/com/example/campushub/
-│       │   ├── CampusHubApplicationTests.java
-│       │   └── announcement/
-│       │       └── AnnouncementControllerTest.java
+│       ├── java/vn/edu/ptit/campushub/
+│       │   └── PostApiIntegrationTest.java
 │       └── resources/
-│           └── application.properties           ← H2 in-memory cho test
+│           └── application.yml   ← H2 in-memory cho test
 ├── Dockerfile
 ├── .dockerignore
 ├── compose.yml
@@ -112,18 +119,8 @@ docker compose down -v
 |---------|------|-----|
 | Backend | 8080 | http://localhost:8080 |
 | Health  | 8080 | http://localhost:8080/actuator/health |
+| API Posts | 8080 | http://localhost:8080/api/posts |
 | MySQL   | 3306 | localhost:3306 (internal: `mysql:3306`) |
-
-### API Endpoints
-
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| GET    | `/api/announcements` | Lấy tất cả thông báo |
-| GET    | `/api/announcements/{id}` | Lấy thông báo theo ID |
-| GET    | `/api/announcements/category/{category}` | Lọc theo danh mục |
-| POST   | `/api/announcements` | Tạo thông báo mới |
-| PUT    | `/api/announcements/{id}` | Cập nhật thông báo |
-| DELETE | `/api/announcements/{id}` | Xóa thông báo |
 
 ---
 
@@ -133,12 +130,9 @@ Backend nhận cấu hình kết nối MySQL qua biến môi trường (được
 
 | Biến | Giá trị trong Compose | Mô tả |
 |------|-----------------------|-------|
-| `DB_HOST` | `mysql` | Tên service MySQL (thay localhost) |
-| `DB_PORT` | `3306` | Cổng MySQL |
-| `DB_NAME` | `campushub` | Tên database |
-| `DB_USER` | `campushub` | Username |
-| `DB_PASSWORD` | `campushub123` | Password |
+| `DB_URL` | `jdbc:mysql://mysql:3306/campus_hub?createDatabaseIfNotExist=true` | URL kết nối — dùng tên service `mysql` thay `localhost` |
+| `DB_USERNAME` | `campushub` | Username MySQL |
+| `DB_PASSWORD` | `campushub123` | Password MySQL |
 | `SERVER_PORT` | `8080` | Cổng backend |
 
 ---
-
