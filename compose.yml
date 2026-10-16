@@ -1,0 +1,64 @@
+services:
+
+  # ── MySQL Database ──────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: campus-hub-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: campushub
+      MYSQL_USER: campushub
+      MYSQL_PASSWORD: campushub123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - campus-hub-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Campus Hub Backend ──────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: campus-hub-backend:latest
+    container_name: campus-hub-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # Backend đọc DB_HOST = tên service "mysql" thay vì localhost
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: campushub
+      DB_USER: campushub
+      DB_PASSWORD: campushub123
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - campus-hub-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# ── Volumes ─────────────────────────────────────────────────────────────────
+volumes:
+  mysql_data:
+    driver: local
+
+# ── Networks ─────────────────────────────────────────────────────────────────
+networks:
+  campus-hub-net:
+    driver: bridge
